@@ -1,0 +1,47 @@
+{
+  "name": "@igreen/platform-shell",
+  "version": "0.1.0",
+  "description": "Contrato de shell/federation do VO: SessionProvider único (VO JWT — decisão α), moduleRegistry (D6), ModuleSlot e federationShared. Este é o pacote singleton que carrega o Context de sessão através da fronteira do Module Federation.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/igreenlab/consultant-platform-shell.git"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"test/*.test.mjs\"",
+    "check": "pnpm build && pnpm test"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5.101.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.3"
+  }
+}
