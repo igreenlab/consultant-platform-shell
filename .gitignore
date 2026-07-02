@@ -1,3 +1,5 @@
 node_modules
-dist
 *.tsbuildinfo
+# dist é COMMITADA de propósito: consumidores via git-dep recebem o build pronto,
+# sem rodar tsup/esbuild no install (pnpm v10 bloqueia o build script do esbuild
+# em Docker/CI). O `prepare` só builda se a dist não existir.

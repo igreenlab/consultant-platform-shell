@@ -26,10 +26,13 @@
   ],
   "scripts": {
     "build": "tsup",
-    "prepare": "tsup",
+    "prepare": "test -d dist || tsup",
     "typecheck": "tsc --noEmit",
     "test": "node --test \"test/*.test.mjs\"",
     "check": "pnpm build && pnpm test"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.0.0",
