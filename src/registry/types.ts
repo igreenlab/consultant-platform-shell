@@ -36,6 +36,12 @@ export interface ModuleMenuItem {
 
 export interface ModuleManifest {
   id: ModuleId;
+  /** Rótulo do MÓDULO na rail do VO (menu de 2 colunas — 1 ícone por módulo). */
+  label: string;
+  /** Ícone lucide (string; host mapeia → componente) do MÓDULO na rail. */
+  icon: string;
+  /** Ordem no rail (menor = mais acima). Ausente = ordem do array. */
+  order?: number;
   /** Prefixo de rota e `base` do remote (ex.: '/rankings'). */
   namespace: string;
   /** URL do `remoteEntry.js` — MESMA origem (A1, domínio único). */
@@ -65,4 +71,13 @@ export interface VOSidebarItem {
 export interface VOSidebarGroup {
   group: string;
   items: VOSidebarItem[];
+}
+
+/** Módulo resolvido para a RAIL do VO (1 ícone por módulo — menu 2 colunas). */
+export interface VOModule {
+  id: ModuleId;
+  label: string;
+  /** Nome do ícone lucide (string) — o host mapeia string → componente. */
+  icon: string;
+  namespace: string;
 }

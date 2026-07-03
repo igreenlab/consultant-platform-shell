@@ -26,6 +26,7 @@ export {
   enabledModules,
   moduleById,
   moduleByPath,
+  voModules,
   voSidebarItems,
   voSidebarGroups,
   voTriggerableRoutes,
@@ -36,6 +37,7 @@ export type {
   ModuleSession,
   ModuleMenuItem,
   ModuleManifest,
+  VOModule,
   VOSidebarItem,
   VOSidebarGroup,
 } from './registry/types';

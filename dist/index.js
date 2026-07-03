@@ -201,6 +201,9 @@ function useSessionOptional() {
 var moduleRegistry = [
   {
     id: "rankings",
+    label: "Rankings",
+    icon: "Trophy",
+    order: 1,
     namespace: "/rankings",
     remoteEntry: "/rankings/assets/remoteEntry.js",
     expose: "./Routes",
@@ -255,6 +258,9 @@ var moduleRegistry = [
   },
   {
     id: "academy",
+    label: "Academy",
+    icon: "GraduationCap",
+    order: 2,
     namespace: "/academy",
     remoteEntry: "/academy/assets/remoteEntry.js",
     expose: "./Routes",
@@ -275,6 +281,9 @@ var moduleRegistry = [
   },
   {
     id: "eventos",
+    label: "Eventos",
+    icon: "Calendar",
+    order: 3,
     namespace: "/eventos",
     remoteEntry: "/eventos/assets/remoteEntry.js",
     expose: "./Routes",
@@ -347,6 +356,14 @@ function voSidebarGroups(registry = moduleRegistry) {
     byGroup.get(item.group).push(item);
   }
   return order.map((group) => ({ group, items: byGroup.get(group) }));
+}
+function voModules(registry = moduleRegistry) {
+  return enabledModules(registry).map((m, i) => ({ m, i })).sort((a, b) => (a.m.order ?? a.i) - (b.m.order ?? b.i) || a.i - b.i).map(({ m }) => ({
+    id: m.id,
+    label: m.label,
+    icon: m.icon,
+    namespace: m.namespace
+  }));
 }
 function voTriggerableRoutes(registry = moduleRegistry) {
   return enabledModules(registry).flatMap(
@@ -449,6 +466,6 @@ function federationDefaults(opts = {}) {
   return { shared: federationShared(opts), build: { ...federationBuild } };
 }
 
-export { HostProvider, ModuleSlot, SessionProvider, TOKEN_KEY, consultantQueryKey, decodeVoJwt, enabledModules, federationBuild, federationBuildTarget, federationDefaults, federationShared, idconsultorFromToken, isAdminRoute, isTokenExpired, moduleById, moduleByPath, moduleRegistry, useHostContext, useIsInVOShell, useSession, useSessionOptional, voSession, voSidebarGroups, voSidebarItems, voTriggerableRoutes };
+export { HostProvider, ModuleSlot, SessionProvider, TOKEN_KEY, consultantQueryKey, decodeVoJwt, enabledModules, federationBuild, federationBuildTarget, federationDefaults, federationShared, idconsultorFromToken, isAdminRoute, isTokenExpired, moduleById, moduleByPath, moduleRegistry, useHostContext, useIsInVOShell, useSession, useSessionOptional, voModules, voSession, voSidebarGroups, voSidebarItems, voTriggerableRoutes };
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map

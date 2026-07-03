@@ -154,6 +154,12 @@ interface ModuleMenuItem {
 }
 interface ModuleManifest {
     id: ModuleId;
+    /** Rótulo do MÓDULO na rail do VO (menu de 2 colunas — 1 ícone por módulo). */
+    label: string;
+    /** Ícone lucide (string; host mapeia → componente) do MÓDULO na rail. */
+    icon: string;
+    /** Ordem no rail (menor = mais acima). Ausente = ordem do array. */
+    order?: number;
     /** Prefixo de rota e `base` do remote (ex.: '/rankings'). */
     namespace: string;
     /** URL do `remoteEntry.js` — MESMA origem (A1, domínio único). */
@@ -182,6 +188,14 @@ interface VOSidebarGroup {
     group: string;
     items: VOSidebarItem[];
 }
+/** Módulo resolvido para a RAIL do VO (1 ícone por módulo — menu 2 colunas). */
+interface VOModule {
+    id: ModuleId;
+    label: string;
+    /** Nome do ícone lucide (string) — o host mapeia string → componente. */
+    icon: string;
+    namespace: string;
+}
 
 /**
  * Registry de referência com os 3 módulos-alvo. Os itens de menu vêm das
@@ -203,6 +217,12 @@ declare function moduleByPath(pathname: string, registry?: ModuleManifest[]): Mo
 declare function voSidebarItems(registry?: ModuleManifest[]): VOSidebarItem[];
 /** Mesmos itens da sidebar, já agrupados por `group` (ordem de 1ª aparição). */
 declare function voSidebarGroups(registry?: ModuleManifest[]): VOSidebarGroup[];
+/**
+ * Módulos habilitados resolvidos para a RAIL do VO (1 ícone por módulo — menu de
+ * 2 colunas). Ordenados por `order` asc; empate/ausente mantém a ordem do
+ * registry. Módulos `enabled:false` NÃO entram (rollout via feature-flag).
+ */
+declare function voModules(registry?: ModuleManifest[]): VOModule[];
 /** Rotas acionáveis direto pelo menu do VO (deep-link), com `to` absoluto. */
 declare function voTriggerableRoutes(registry?: ModuleManifest[]): VOSidebarItem[];
 /** `true` se o pathname cai numa rota admin de algum módulo (barreira de expose). */
@@ -333,4 +353,4 @@ declare function federationDefaults(opts?: FederationSharedOptions): {
     };
 };
 
-export { type Consultant, type FederationSharedOptions, type HostContextValue, HostProvider, type HostProviderProps, type ModuleId, type ModuleManifest, type ModuleMenuItem, type ModuleSession, ModuleSlot, type ModuleSlotProps, SessionProvider, type SessionProviderProps, type SessionValue, type SharedConfig, type SharedEntry, TOKEN_KEY, type VOSidebarGroup, type VOSidebarItem, type VoJwtClaims, consultantQueryKey, decodeVoJwt, enabledModules, federationBuild, federationBuildTarget, federationDefaults, federationShared, idconsultorFromToken, isAdminRoute, isTokenExpired, moduleById, moduleByPath, moduleRegistry, useHostContext, useIsInVOShell, useSession, useSessionOptional, voSession, voSidebarGroups, voSidebarItems, voTriggerableRoutes };
+export { type Consultant, type FederationSharedOptions, type HostContextValue, HostProvider, type HostProviderProps, type ModuleId, type ModuleManifest, type ModuleMenuItem, type ModuleSession, ModuleSlot, type ModuleSlotProps, SessionProvider, type SessionProviderProps, type SessionValue, type SharedConfig, type SharedEntry, TOKEN_KEY, type VOModule, type VOSidebarGroup, type VOSidebarItem, type VoJwtClaims, consultantQueryKey, decodeVoJwt, enabledModules, federationBuild, federationBuildTarget, federationDefaults, federationShared, idconsultorFromToken, isAdminRoute, isTokenExpired, moduleById, moduleByPath, moduleRegistry, useHostContext, useIsInVOShell, useSession, useSessionOptional, voModules, voSession, voSidebarGroups, voSidebarItems, voTriggerableRoutes };

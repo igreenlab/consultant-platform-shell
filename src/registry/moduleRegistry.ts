@@ -1,6 +1,7 @@
 import type {
   ModuleId,
   ModuleManifest,
+  VOModule,
   VOSidebarGroup,
   VOSidebarItem,
 } from './types';
@@ -14,6 +15,9 @@ import type {
 export const moduleRegistry: ModuleManifest[] = [
   {
     id: 'rankings',
+    label: 'Rankings',
+    icon: 'Trophy',
+    order: 1,
     namespace: '/rankings',
     remoteEntry: '/rankings/assets/remoteEntry.js',
     expose: './Routes',
@@ -67,6 +71,9 @@ export const moduleRegistry: ModuleManifest[] = [
   },
   {
     id: 'academy',
+    label: 'Academy',
+    icon: 'GraduationCap',
+    order: 2,
     namespace: '/academy',
     remoteEntry: '/academy/assets/remoteEntry.js',
     expose: './Routes',
@@ -85,6 +92,9 @@ export const moduleRegistry: ModuleManifest[] = [
   },
   {
     id: 'eventos',
+    label: 'Eventos',
+    icon: 'Calendar',
+    order: 3,
     namespace: '/eventos',
     remoteEntry: '/eventos/assets/remoteEntry.js',
     expose: './Routes',
@@ -182,6 +192,25 @@ export function voSidebarGroups(
     byGroup.get(item.group)!.push(item);
   }
   return order.map((group) => ({ group, items: byGroup.get(group)! }));
+}
+
+/**
+ * Módulos habilitados resolvidos para a RAIL do VO (1 ícone por módulo — menu de
+ * 2 colunas). Ordenados por `order` asc; empate/ausente mantém a ordem do
+ * registry. Módulos `enabled:false` NÃO entram (rollout via feature-flag).
+ */
+export function voModules(
+  registry: ModuleManifest[] = moduleRegistry,
+): VOModule[] {
+  return enabledModules(registry)
+    .map((m, i) => ({ m, i }))
+    .sort((a, b) => (a.m.order ?? a.i) - (b.m.order ?? b.i) || a.i - b.i)
+    .map<VOModule>(({ m }) => ({
+      id: m.id,
+      label: m.label,
+      icon: m.icon,
+      namespace: m.namespace,
+    }));
 }
 
 /** Rotas acionáveis direto pelo menu do VO (deep-link), com `to` absoluto. */
