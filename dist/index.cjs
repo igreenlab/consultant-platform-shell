@@ -266,8 +266,8 @@ var moduleRegistry = [
     namespace: "/academy",
     remoteEntry: "/academy/assets/remoteEntry.js",
     expose: "./Routes",
-    session: "vo-jwt",
-    // α: backend passa a verificar o VO JWT
+    session: "firebase-bridge",
+    // SSO: VO emite custom token Firebase (docs/migration/academy-sso.md no VO)
     enabled: true,
     menu: [
       {
