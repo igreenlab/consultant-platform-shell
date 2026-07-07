@@ -98,8 +98,8 @@ export const moduleRegistry: ModuleManifest[] = [
     namespace: '/eventos',
     remoteEntry: '/eventos/assets/remoteEntry.js',
     expose: './Routes',
-    session: 'vo-jwt', // após redesign de auth (eventos/auth.md)
-    enabled: false, // rollout: bloqueado até o redesign de backend (auth-unificada §6.3)
+    session: 'vo-jwt', // ponte vo-jwt no backend do eventos (auth.js) — pronta
+    enabled: true, // backend re-plataformado (Postgres) + cutover concluído 2026-07
     menu: [
       {
         label: 'Agenda',
