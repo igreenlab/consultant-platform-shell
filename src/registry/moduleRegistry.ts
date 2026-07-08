@@ -125,14 +125,15 @@ export const moduleRegistry: ModuleManifest[] = [
         surfaceInVOSidebar: true,
         voTriggerable: true,
       },
-      // Admin do módulo: FORA da sidebar do VO (acesso admin fica no standalone
-      // eventos.igreen). Sob o shell o licenciado só vê agenda + seus convites.
+      // Lista/gestão de eventos (EventsManagerPage). Volta pra sidebar do VO (pedido
+      // do dono); os botões de AÇÃO admin/acionista DENTRO dela seguem ocultos sob o
+      // shell ({!inShell}) — só a lista/CRUD de eventos fica acessível.
       {
-        label: 'Eventos',
+        label: 'Lista de Eventos',
         icon: 'CalendarCog',
         to: '/admin/eventos',
         group: 'Eventos',
-        surfaceInVOSidebar: false,
+        surfaceInVOSidebar: true,
         voTriggerable: true,
       },
       {
