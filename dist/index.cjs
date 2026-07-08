@@ -302,13 +302,30 @@ var moduleRegistry = [
         surfaceInVOSidebar: true,
         voTriggerable: true
       },
-      // "admin-ish" no módulo, mas classificada VO-surfaceable → acionável direto.
+      {
+        label: "Meus Convites",
+        icon: "Ticket",
+        to: "/meus-convites",
+        group: "Eventos",
+        surfaceInVOSidebar: true,
+        voTriggerable: true
+      },
+      {
+        label: "Convites na Equipe",
+        icon: "Users",
+        to: "/convites-equipe",
+        group: "Eventos",
+        surfaceInVOSidebar: true,
+        voTriggerable: true
+      },
+      // Admin do módulo: FORA da sidebar do VO (acesso admin fica no standalone
+      // eventos.igreen). Sob o shell o licenciado só vê agenda + seus convites.
       {
         label: "Eventos",
         icon: "CalendarCog",
         to: "/admin/eventos",
         group: "Eventos",
-        surfaceInVOSidebar: true,
+        surfaceInVOSidebar: false,
         voTriggerable: true
       },
       {
