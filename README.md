@@ -1,17 +1,19 @@
-# `@igreen/platform-shell` — reference implementation (F0)
+# `@igreen/platform-shell` — o contrato de federação do VO
 
 The core **contract** that lets the iGreen **Virtual Office (VO)** host federated
 modules (Rankings / Academy / Eventos) via **Module Federation** under a single
-domain. This is the package that the spike (`playbook/spike-federation.md` §4)
-identified as **mandatory**: React as a strict singleton is *not enough* for a
-React Context to cross the MF boundary — the Context **object** must live in a
-package marked `shared: { singleton: true }`. **This package is that package.**
+domain. The key insight: React as a strict singleton is *not enough* for a React
+Context to cross the MF boundary — the Context **object** must live in a package
+marked `shared: { singleton: true }`. **This package is that package.**
 
-> Status: **buildable reference** (F0). Its final repo/home is an open decision
-> (**A4**) — do **not** wire it into the VO yet. Grounded in the real VO code
-> (`ui/src/auth/voSession.ts`, `SessionProvider.tsx`, `apiClient.ts`,
-> `routes/router.tsx`, `layout/AppLayout.tsx`) and the playbook
-> (`module-federation.md`, `auth-unificada.md`, `01-decisoes.md`).
+> **Status: EM PRODUÇÃO.** Consumido pelo **host VO** como submódulo `workspace:*`
+> (em `virtual-office/platform-shell/`) e por **cada módulo remoto** como git-dep
+> `git+ssh` pinado. Rankings, Academy e Eventos rodam federados no VO em produção.
+>
+> 👉 **Integrando um módulo novo?** O passo-a-passo completo (registry → exposes →
+> bake → deploy → auth) está em **[`../docs/FEDERATION.md`](../docs/FEDERATION.md)** e a
+> visão macro no **[README do VO](../README.md#-arquitetura-federada--integrar-um-novo-módulo)**.
+> Este README foca na **API do pacote** (o que ele exporta e como fiar).
 
 ## Proof it builds
 
@@ -242,10 +244,10 @@ src/
 test/                          node:test (jwt, registry, federation, SSR render)
 ```
 
-## Known gaps (need a human decision)
+## Notas de integração (estado atual)
 
-- **A4** — owner/versioning/home of this package (monorepo vs internal registry). This is a **reference**; not wired into the VO.
-- **Consultant fetch coupling** — the reference injects `fetchConsultant` (default hits `/v1/consultant` with the VO envelope) so the package doesn't depend on the VO's private axios client. The host should pass its real `api` client.
-- **AuthBridge (MF-2 / auth-unificada §2)** — this package carries the *identity* (decision α: modules verify the VO JWT). Minting each module's own session (Academy/Eventos backends accepting the VO JWT, 401→re-provision) is **backend work not included here**.
-- **DS as singleton** — `federationShared({ extraSingletons })` is the seam, but enumerating the full Design System chain (radix/dnd-kit/tanstack-virtual/lucide/recharts/…) as singletons is deferred to the host wiring.
+- **Home/versionamento — RESOLVIDO (era A4):** o pacote vive como **submódulo do monorepo VO** (`virtual-office/platform-shell/`), versionado pelo ponteiro do submódulo (host) + commit pinado no git-dep (remotes). Plugado e em produção.
+- **Consultant fetch** — o host injeta `fetchConsultant` (default: `GET /v1/consultant` desembrulhando o envelope `{success,data}` do VO) pra o pacote não depender do axios privado do VO.
+- **AuthBridge (backend por módulo)** — este pacote carrega a *identidade* (o módulo verifica o VO JWT). Fazer o backend do módulo **aceitar** o VO JWT é trabalho de backend por módulo: **o eventos já faz** (`api/routes/auth.js` → `verifyVoToken`, com `VO_SESSION_SECRET` **compartilhado** com o vo-api); o Academy (Firebase) exige a ponte SSO, que pede revisão humana.
+- **DS como singleton** — `federationShared({ extraSingletons })` é a costura; enumerar a cadeia inteira do Design System (radix/dnd-kit/tanstack-virtual/lucide/recharts/…) como singletons fica na fiação do host.
 ```
