@@ -237,6 +237,14 @@ var moduleRegistry = [
         surfaceInVOSidebar: true,
         voTriggerable: true
       },
+      {
+        label: "Cruzeiro Gustavo Lima",
+        icon: "Ship",
+        to: "/cruzeiro-gustavo-lima",
+        group: "Campanhas",
+        surfaceInVOSidebar: true,
+        voTriggerable: true
+      },
       // Admin — NÃO exposto no VO (2 barreiras: fora da sidebar + fora do expose).
       {
         label: "Ranking de Cotas",
