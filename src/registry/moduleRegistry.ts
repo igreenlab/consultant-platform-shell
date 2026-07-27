@@ -49,9 +49,9 @@ export const moduleRegistry: ModuleManifest[] = [
         voTriggerable: true,
       },
       {
-        label: 'Cruzeiro Gustavo Lima',
+        label: 'Cruzeiro Gusttavo Lima',
         icon: 'Ship',
-        to: '/cruzeiro-gustavo-lima',
+        to: '/cruzeiro-gusttavo-lima',
         group: 'Campanhas',
         surfaceInVOSidebar: true,
         voTriggerable: true,
