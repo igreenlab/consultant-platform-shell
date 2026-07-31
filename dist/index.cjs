@@ -348,6 +348,208 @@ var moduleRegistry = [
         voTriggerable: true
       }
     ]
+  },
+  {
+    id: "creators",
+    label: "Creators",
+    icon: "Rocket",
+    // mesmo ícone do contexto no standalone (creator-hub App.tsx)
+    order: 4,
+    namespace: "/creators",
+    remoteEntry: "/creators/assets/remoteEntry.js",
+    expose: "./Routes",
+    // SSO: a API do Creator Hub (terceiro — Mix Ideias) já troca Firebase ID
+    // token por sessão própria em POST /api/v1/auth/igreen — mesma ponte do
+    // Academy. Confirmar o project ID com a Mix Ideias (Fase 0); se divergir,
+    // plano B = 'vo-jwt' (backend deles validar o VO JWT).
+    session: "firebase-bridge",
+    // Skeleton (rollout dev-first): ligar SÓ junto com o bake-in do remote no
+    // vo-ui (deploy.sh dev + Dockerfile.ui + knob VITE_CREATORS_REMOTE_ENTRY).
+    // Ligar antes = rail aponta pra remoteEntry inexistente.
+    enabled: false,
+    menu: [
+      {
+        label: "Painel",
+        icon: "LayoutDashboard",
+        to: "/",
+        group: "Creators",
+        surfaceInVOSidebar: true,
+        voTriggerable: true
+      },
+      {
+        label: "Meus v\xEDdeos",
+        icon: "Video",
+        to: "/videos",
+        group: "Creators",
+        surfaceInVOSidebar: true,
+        voTriggerable: true
+      },
+      {
+        label: "Ranking",
+        icon: "Trophy",
+        to: "/ranking",
+        group: "Creators",
+        surfaceInVOSidebar: true,
+        voTriggerable: true
+      },
+      {
+        label: "Academy",
+        icon: "GraduationCap",
+        to: "/academy",
+        group: "Creators",
+        surfaceInVOSidebar: true,
+        voTriggerable: true
+      },
+      {
+        label: "Est\xFAdio de IA",
+        icon: "Sparkles",
+        to: "/ia",
+        group: "Creators",
+        surfaceInVOSidebar: true,
+        voTriggerable: true
+      },
+      {
+        label: "Regras",
+        icon: "ClipboardList",
+        to: "/regras",
+        group: "Creators",
+        surfaceInVOSidebar: true,
+        voTriggerable: true
+      },
+      {
+        label: "Minha conta",
+        icon: "UserCog",
+        to: "/conta",
+        group: "Creators",
+        surfaceInVOSidebar: true,
+        voTriggerable: true
+      },
+      {
+        label: "Ajuda",
+        icon: "CircleHelp",
+        to: "/ajuda",
+        group: "Creators",
+        surfaceInVOSidebar: true,
+        voTriggerable: true
+      },
+      // Atalhos da conta (no standalone vivem no user-menu do AppShell, não na
+      // sidebar). Existem como rota, sem item de menu no VO.
+      {
+        label: "Minhas redes",
+        icon: "AtSign",
+        to: "/redes",
+        group: "Minha conta",
+        surfaceInVOSidebar: false,
+        voTriggerable: false
+      },
+      {
+        label: "Dados de pagamento",
+        icon: "CreditCard",
+        to: "/pagamento",
+        group: "Minha conta",
+        surfaceInVOSidebar: false,
+        voTriggerable: false
+      },
+      {
+        label: "Conex\xF5es",
+        icon: "Link2",
+        to: "/conexoes",
+        group: "Minha conta",
+        surfaceInVOSidebar: false,
+        voTriggerable: false
+      },
+      {
+        label: "Seguran\xE7a",
+        icon: "ShieldCheck",
+        to: "/seguranca",
+        group: "Minha conta",
+        surfaceInVOSidebar: false,
+        voTriggerable: false
+      },
+      // Admin — NÃO exposto no VO (2 barreiras: fora da sidebar + fora do
+      // expose './Routes'). Gestão segue no standalone (creators.igreenenergy…).
+      {
+        label: "Modera\xE7\xE3o",
+        icon: "Lock",
+        to: "/admin-moderacao",
+        group: "Administra\xE7\xE3o",
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true
+      },
+      {
+        label: "Campanhas",
+        icon: "Lock",
+        to: "/admin-campanhas",
+        group: "Administra\xE7\xE3o",
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true
+      },
+      {
+        label: "Regras (admin)",
+        icon: "Lock",
+        to: "/admin-regras",
+        group: "Administra\xE7\xE3o",
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true
+      },
+      {
+        label: "Usu\xE1rios",
+        icon: "Lock",
+        to: "/admin-usuarios",
+        group: "Administra\xE7\xE3o",
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true
+      },
+      {
+        label: "Laborat\xF3rio",
+        icon: "Lock",
+        to: "/admin-laboratorio",
+        group: "Administra\xE7\xE3o",
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true
+      },
+      {
+        label: "Rede neural",
+        icon: "Lock",
+        to: "/admin-rede",
+        group: "Administra\xE7\xE3o",
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true
+      },
+      {
+        label: "Financeiro",
+        icon: "Lock",
+        to: "/admin-financeiro",
+        group: "Administra\xE7\xE3o",
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true
+      },
+      {
+        label: "Pagamentos",
+        icon: "Lock",
+        to: "/admin-pagamentos",
+        group: "Administra\xE7\xE3o",
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true
+      },
+      {
+        label: "Configura\xE7\xE3o",
+        icon: "Lock",
+        to: "/admin-config",
+        group: "Administra\xE7\xE3o",
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true
+      }
+    ]
   }
 ];
 function enabledModules(registry = moduleRegistry) {

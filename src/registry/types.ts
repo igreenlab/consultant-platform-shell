@@ -12,7 +12,7 @@
  *     (deep-link no namespace, mesmo que "admin-ish" no módulo).
  */
 
-export type ModuleId = 'rankings' | 'academy' | 'eventos';
+export type ModuleId = 'rankings' | 'academy' | 'eventos' | 'creators';
 
 /** Como o módulo obtém auth (auth-unificada.md). α ⇒ `vo-jwt` é o alvo. */
 export type ModuleSession = 'vo-jwt' | 'firebase-bridge' | 'public';

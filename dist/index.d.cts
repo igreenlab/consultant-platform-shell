@@ -133,7 +133,7 @@ declare function isTokenExpired(token: string | null | undefined): boolean;
  *  - `voTriggerable`: rota específica ACIONÁVEL direto pelo menu do VO
  *     (deep-link no namespace, mesmo que "admin-ish" no módulo).
  */
-type ModuleId = 'rankings' | 'academy' | 'eventos';
+type ModuleId = 'rankings' | 'academy' | 'eventos' | 'creators';
 /** Como o módulo obtém auth (auth-unificada.md). α ⇒ `vo-jwt` é o alvo. */
 type ModuleSession = 'vo-jwt' | 'firebase-bridge' | 'public';
 interface ModuleMenuItem {
@@ -198,7 +198,8 @@ interface VOModule {
 }
 
 /**
- * Registry de referência com os 3 módulos-alvo. Os itens de menu vêm das
+ * Registry de referência com os módulos-alvo (rankings/academy/eventos +
+ * creators em rollout). Os itens de menu vêm das
  * classificações reais em `maps/<módulo>/rotas-e-menus.md` (VO-surfaceable /
  * admin-não-expor). Este objeto é o exemplo; em produção pode ser carregado de
  * config/feature-flag, mas o TIPO (`ModuleManifest[]`) é o contrato.

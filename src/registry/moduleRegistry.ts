@@ -7,7 +7,8 @@ import type {
 } from './types';
 
 /**
- * Registry de referência com os 3 módulos-alvo. Os itens de menu vêm das
+ * Registry de referência com os módulos-alvo (rankings/academy/eventos +
+ * creators em rollout). Os itens de menu vêm das
  * classificações reais em `maps/<módulo>/rotas-e-menus.md` (VO-surfaceable /
  * admin-não-expor). Este objeto é o exemplo; em produção pode ser carregado de
  * config/feature-flag, mas o TIPO (`ModuleManifest[]`) é o contrato.
@@ -151,6 +152,207 @@ export const moduleRegistry: ModuleManifest[] = [
         group: 'Eventos',
         surfaceInVOSidebar: false, // precisa de :id → não vira item fixo de sidebar
         voTriggerable: true,
+      },
+    ],
+  },
+  {
+    id: 'creators',
+    label: 'Creators',
+    icon: 'Rocket', // mesmo ícone do contexto no standalone (creator-hub App.tsx)
+    order: 4,
+    namespace: '/creators',
+    remoteEntry: '/creators/assets/remoteEntry.js',
+    expose: './Routes',
+    // SSO: a API do Creator Hub (terceiro — Mix Ideias) já troca Firebase ID
+    // token por sessão própria em POST /api/v1/auth/igreen — mesma ponte do
+    // Academy. Confirmar o project ID com a Mix Ideias (Fase 0); se divergir,
+    // plano B = 'vo-jwt' (backend deles validar o VO JWT).
+    session: 'firebase-bridge',
+    // Skeleton (rollout dev-first): ligar SÓ junto com o bake-in do remote no
+    // vo-ui (deploy.sh dev + Dockerfile.ui + knob VITE_CREATORS_REMOTE_ENTRY).
+    // Ligar antes = rail aponta pra remoteEntry inexistente.
+    enabled: false,
+    menu: [
+      {
+        label: 'Painel',
+        icon: 'LayoutDashboard',
+        to: '/',
+        group: 'Creators',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+      {
+        label: 'Meus vídeos',
+        icon: 'Video',
+        to: '/videos',
+        group: 'Creators',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+      {
+        label: 'Ranking',
+        icon: 'Trophy',
+        to: '/ranking',
+        group: 'Creators',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+      {
+        label: 'Academy',
+        icon: 'GraduationCap',
+        to: '/academy',
+        group: 'Creators',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+      {
+        label: 'Estúdio de IA',
+        icon: 'Sparkles',
+        to: '/ia',
+        group: 'Creators',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+      {
+        label: 'Regras',
+        icon: 'ClipboardList',
+        to: '/regras',
+        group: 'Creators',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+      {
+        label: 'Minha conta',
+        icon: 'UserCog',
+        to: '/conta',
+        group: 'Creators',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+      {
+        label: 'Ajuda',
+        icon: 'CircleHelp',
+        to: '/ajuda',
+        group: 'Creators',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+      // Atalhos da conta (no standalone vivem no user-menu do AppShell, não na
+      // sidebar). Existem como rota, sem item de menu no VO.
+      {
+        label: 'Minhas redes',
+        icon: 'AtSign',
+        to: '/redes',
+        group: 'Minha conta',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+      },
+      {
+        label: 'Dados de pagamento',
+        icon: 'CreditCard',
+        to: '/pagamento',
+        group: 'Minha conta',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+      },
+      {
+        label: 'Conexões',
+        icon: 'Link2',
+        to: '/conexoes',
+        group: 'Minha conta',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+      },
+      {
+        label: 'Segurança',
+        icon: 'ShieldCheck',
+        to: '/seguranca',
+        group: 'Minha conta',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+      },
+      // Admin — NÃO exposto no VO (2 barreiras: fora da sidebar + fora do
+      // expose './Routes'). Gestão segue no standalone (creators.igreenenergy…).
+      {
+        label: 'Moderação',
+        icon: 'Lock',
+        to: '/admin-moderacao',
+        group: 'Administração',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true,
+      },
+      {
+        label: 'Campanhas',
+        icon: 'Lock',
+        to: '/admin-campanhas',
+        group: 'Administração',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true,
+      },
+      {
+        label: 'Regras (admin)',
+        icon: 'Lock',
+        to: '/admin-regras',
+        group: 'Administração',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true,
+      },
+      {
+        label: 'Usuários',
+        icon: 'Lock',
+        to: '/admin-usuarios',
+        group: 'Administração',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true,
+      },
+      {
+        label: 'Laboratório',
+        icon: 'Lock',
+        to: '/admin-laboratorio',
+        group: 'Administração',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true,
+      },
+      {
+        label: 'Rede neural',
+        icon: 'Lock',
+        to: '/admin-rede',
+        group: 'Administração',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true,
+      },
+      {
+        label: 'Financeiro',
+        icon: 'Lock',
+        to: '/admin-financeiro',
+        group: 'Administração',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true,
+      },
+      {
+        label: 'Pagamentos',
+        icon: 'Lock',
+        to: '/admin-pagamentos',
+        group: 'Administração',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true,
+      },
+      {
+        label: 'Configuração',
+        icon: 'Lock',
+        to: '/admin-config',
+        group: 'Administração',
+        surfaceInVOSidebar: false,
+        voTriggerable: false,
+        admin: true,
       },
     ],
   },
