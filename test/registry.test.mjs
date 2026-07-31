@@ -20,12 +20,14 @@ test('registry has the 4 target modules with namespaces', () => {
   assert.equal(moduleByPath('/unknown'), undefined);
 });
 
-test('enabledModules honors the feature-flag (creators disabled until bake-in)', () => {
+test('enabledModules honors the feature-flag', () => {
   const ids = enabledModules().map((m) => m.id);
-  assert.ok(ids.includes('rankings'));
-  assert.ok(ids.includes('academy'));
-  assert.ok(ids.includes('eventos')); // cutover concluído 2026-07 → ligado
-  assert.ok(!ids.includes('creators')); // enabled:false → fica de fora até o F3
+  for (const id of ['rankings', 'academy', 'eventos', 'creators']) {
+    assert.ok(ids.includes(id)); // todos ligados (creators: bake-in F3, 2026-07)
+  }
+  // a flag continua sendo o gate: desligar um módulo o tira dos seletores
+  const custom = moduleRegistry.map((m) => (m.id === 'creators' ? { ...m, enabled: false } : m));
+  assert.ok(!enabledModules(custom).map((m) => m.id).includes('creators'));
 });
 
 test('D6: voSidebarItems excludes admin + honors surfaceInVOSidebar, to is absolute', () => {
@@ -37,8 +39,9 @@ test('D6: voSidebarItems excludes admin + honors surfaceInVOSidebar, to is absol
   // surfaceable rankings items ARE present, with namespace-prefixed `to`
   assert.ok(tos.includes('/rankings/mapa-cidades'));
   assert.ok(tos.includes('/rankings/ranking-verticais'));
-  // disabled module (creators) contributes nothing
-  assert.ok(!tos.some((t) => t.startsWith('/creators/')));
+  // creators ligado: itens surfaceable presentes; admin JAMAIS (2 barreiras)
+  assert.ok(tos.includes('/creators/videos'));
+  assert.ok(!tos.includes('/creators/admin-moderacao'));
   // no admin item leaked
   assert.ok(items.every((i) => i.module !== undefined));
 });

@@ -363,10 +363,11 @@ var moduleRegistry = [
     // Academy. Confirmar o project ID com a Mix Ideias (Fase 0); se divergir,
     // plano B = 'vo-jwt' (backend deles validar o VO JWT).
     session: "firebase-bridge",
-    // Skeleton (rollout dev-first): ligar SÓ junto com o bake-in do remote no
-    // vo-ui (deploy.sh dev + Dockerfile.ui + knob VITE_CREATORS_REMOTE_ENTRY).
-    // Ligar antes = rail aponta pra remoteEntry inexistente.
-    enabled: false,
+    // Ligado junto do bake-in do remote no vo-ui (F3, 2026-07). Rollout por
+    // ambiente segue no ponteiro do submódulo do host: develop (dev-escritorio)
+    // primeiro; prod só quando o main do VO bumpar o submódulo (prod/ui/deploy.sh
+    // já builda o creators-remote:prod desde o mesmo F3).
+    enabled: true,
     menu: [
       {
         label: "Painel",
