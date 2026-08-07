@@ -10,7 +10,7 @@ import {
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { voSession } from './session-storage';
-import { idconsultorFromToken } from './jwt';
+import { idconsultorFromToken, isTokenExpired } from './jwt';
 import type { Consultant, SessionValue } from './types';
 
 /**
@@ -41,11 +41,34 @@ interface ApiEnvelope<T> {
 }
 
 /**
+ * `apiBase` só pode ser relativo (mesma origem do host) ou uma URL absoluta
+ * de mesma origem — nunca outro domínio. Um `apiBase` mal configurado
+ * apontando pra fora vazaria o Bearer token na primeira chamada.
+ */
+function assertSameOriginApiBase(apiBase: string) {
+  if (!apiBase || apiBase.startsWith('/')) return; // relativo: sempre mesma origem
+  if (typeof window === 'undefined') return; // SSR/teste: sem origem pra comparar
+  try {
+    const resolved = new URL(apiBase, window.location.origin);
+    if (resolved.origin !== window.location.origin) {
+      throw new Error(
+        `SessionProvider: apiBase="${apiBase}" aponta pra outra origem (${resolved.origin}) — ` +
+          'o Bearer token do consultor não pode ser enviado pra fora do host. Use um path relativo.',
+      );
+    }
+  } catch (err) {
+    if (err instanceof TypeError) return; // URL inválida: deixa o fetch falhar com o erro real
+    throw err;
+  }
+}
+
+/**
  * Fetcher default: `GET {apiBase}/v1/consultant` com Bearer, desembrulhando o
  * envelope da API do VO (`{ success, data }`). O host pode injetar seu próprio
  * `fetchConsultant` (ex.: o `api` client do VO) via prop.
  */
 function makeDefaultFetchConsultant(apiBase: string) {
+  assertSameOriginApiBase(apiBase);
   return async function defaultFetchConsultant(token: string): Promise<Consultant> {
     const res = await fetch(`${apiBase.replace(/\/$/, '')}/v1/consultant`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -103,7 +126,7 @@ export function SessionProvider({
   const { data: consultant, isLoading } = useQuery({
     queryKey: consultantQueryKey(token),
     queryFn: () => loadConsultant(token as string),
-    enabled: !!token,
+    enabled: !!token && !isTokenExpired(token),
   });
 
   const login = useCallback(
@@ -120,6 +143,16 @@ export function SessionProvider({
     queryClient.clear();
     onLogout?.();
   }, [queryClient, onLogout]);
+
+  // isTokenExpired() existia mas não era usado — sessão morta (token com
+  // `exp` no passado) ficava restaurada silenciosamente até a primeira
+  // chamada de API falhar. Desloga proativamente assim que o token
+  // (restaurado do storage ou trocado noutra aba) já está expirado.
+  useEffect(() => {
+    if (token && isTokenExpired(token)) {
+      logout();
+    }
+  }, [token, logout]);
 
   const value = useMemo<SessionValue>(
     () => ({

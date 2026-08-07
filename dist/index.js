@@ -120,7 +120,23 @@ var SessionContext = createContext(null);
 function consultantQueryKey(token) {
   return ["consultant", token];
 }
+function assertSameOriginApiBase(apiBase) {
+  if (!apiBase || apiBase.startsWith("/")) return;
+  if (typeof window === "undefined") return;
+  try {
+    const resolved = new URL(apiBase, window.location.origin);
+    if (resolved.origin !== window.location.origin) {
+      throw new Error(
+        `SessionProvider: apiBase="${apiBase}" aponta pra outra origem (${resolved.origin}) \u2014 o Bearer token do consultor n\xE3o pode ser enviado pra fora do host. Use um path relativo.`
+      );
+    }
+  } catch (err) {
+    if (err instanceof TypeError) return;
+    throw err;
+  }
+}
 function makeDefaultFetchConsultant(apiBase) {
+  assertSameOriginApiBase(apiBase);
   return async function defaultFetchConsultant(token) {
     const res = await fetch(`${apiBase.replace(/\/$/, "")}/v1/consultant`, {
       headers: { Authorization: `Bearer ${token}` }
@@ -156,7 +172,7 @@ function SessionProvider({
   const { data: consultant, isLoading } = useQuery({
     queryKey: consultantQueryKey(token),
     queryFn: () => loadConsultant(token),
-    enabled: !!token
+    enabled: !!token && !isTokenExpired(token)
   });
   const login = useCallback(
     (newToken, opts) => {
@@ -171,6 +187,11 @@ function SessionProvider({
     queryClient.clear();
     onLogout?.();
   }, [queryClient, onLogout]);
+  useEffect(() => {
+    if (token && isTokenExpired(token)) {
+      logout();
+    }
+  }, [token, logout]);
   const value = useMemo(
     () => ({
       token,
