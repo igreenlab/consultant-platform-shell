@@ -566,10 +566,10 @@ var moduleRegistry = [
     // direto. A ponte é 'vo-jwt': a api-store valida o JWT do VO e emite o
     // token dela (F4), mesmo desenho do eventos.
     session: "vo-jwt",
-    // enabled:false DE PROPÓSITO: o flip entra só no F3, junto do bake-in do
-    // store-remote no vo-ui. Ligar antes deixa o rail da sidebar apontando
-    // para um remoteEntry 404 (lição do creators).
-    enabled: false,
+    // Ligado no F3, junto do bake-in do store-remote no vo-ui. O rollout por
+    // ambiente segue no ponteiro do submódulo do host: develop (dev-escritorio)
+    // primeiro; prod só quando o main do VO bumpar o submódulo.
+    enabled: true,
     // Escopo federado = fluxo de compra do licenciado. As 9 páginas
     // institucionais (empresa/como-comprar/envio/garantia/...) e o /login
     // ficam FORA do expose: dentro do Escritório são ruído, e a sessão vem

@@ -29,8 +29,8 @@ test('enabledModules honors the feature-flag', () => {
   const custom = moduleRegistry.map((m) => (m.id === 'creators' ? { ...m, enabled: false } : m));
   assert.ok(!enabledModules(custom).map((m) => m.id).includes('creators'));
 
-  // 'store' nasce enabled:false (flip no F3, junto do bake-in do remote).
-  assert.ok(!enabledModules().map((m) => m.id).includes('store'));
+  // 'store' ligado no F3 (bake-in do remote no vo-ui já no vault).
+  assert.ok(enabledModules().map((m) => m.id).includes('store'));
 });
 
 test('D6: voSidebarItems excludes admin + honors surfaceInVOSidebar, to is absolute', () => {
