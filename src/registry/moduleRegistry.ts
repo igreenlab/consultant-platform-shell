@@ -357,6 +357,55 @@ export const moduleRegistry: ModuleManifest[] = [
       },
     ],
   },
+  {
+    id: 'store',
+    label: 'Loja',
+    icon: 'Store',
+    order: 5,
+    namespace: '/store',
+    remoteEntry: '/store/assets/remoteEntry.js',
+    expose: './Routes',
+    // SSO: a api-igreen-store JÁ troca um JWT iGreen pelo cookie de sessão em
+    // POST /auth/session — mas exige o MESMO segredo e a MESMA audience
+    // (aud=igreen-store) que o login dela emite, então o voSession não serve
+    // direto. A ponte é 'vo-jwt': a api-store valida o JWT do VO e emite o
+    // token dela (F4), mesmo desenho do eventos.
+    session: 'vo-jwt',
+    // enabled:false DE PROPÓSITO: o flip entra só no F3, junto do bake-in do
+    // store-remote no vo-ui. Ligar antes deixa o rail da sidebar apontando
+    // para um remoteEntry 404 (lição do creators).
+    enabled: false,
+    // Escopo federado = fluxo de compra do licenciado. As 9 páginas
+    // institucionais (empresa/como-comprar/envio/garantia/...) e o /login
+    // ficam FORA do expose: dentro do Escritório são ruído, e a sessão vem
+    // por SSO. Elas seguem existindo no standalone igreenstore.com.br.
+    menu: [
+      {
+        label: 'Loja',
+        icon: 'Store',
+        to: '/',
+        group: 'Loja',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+      {
+        label: 'Carrinho',
+        icon: 'ShoppingCart',
+        to: '/carrinho',
+        group: 'Loja',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+      {
+        label: 'Meus pedidos',
+        icon: 'Package',
+        to: '/pedidos',
+        group: 'Loja',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+    ],
+  },
 ];
 
 // ── Seletores (D6) ───────────────────────────────────────────────────────────

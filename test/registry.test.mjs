@@ -13,7 +13,7 @@ import {
 
 test('registry has the 4 target modules with namespaces', () => {
   const ids = moduleRegistry.map((m) => m.id).sort();
-  assert.deepEqual(ids, ['academy', 'creators', 'eventos', 'rankings']);
+  assert.deepEqual(ids, ['academy', 'creators', 'eventos', 'rankings', 'store']);
   assert.equal(moduleByPath('/rankings/mapa-cidades')?.id, 'rankings');
   assert.equal(moduleByPath('/academy')?.id, 'academy');
   assert.equal(moduleByPath('/creators/videos')?.id, 'creators');
@@ -28,6 +28,9 @@ test('enabledModules honors the feature-flag', () => {
   // a flag continua sendo o gate: desligar um módulo o tira dos seletores
   const custom = moduleRegistry.map((m) => (m.id === 'creators' ? { ...m, enabled: false } : m));
   assert.ok(!enabledModules(custom).map((m) => m.id).includes('creators'));
+
+  // 'store' nasce enabled:false (flip no F3, junto do bake-in do remote).
+  assert.ok(!enabledModules().map((m) => m.id).includes('store'));
 });
 
 test('D6: voSidebarItems excludes admin + honors surfaceInVOSidebar, to is absolute', () => {
