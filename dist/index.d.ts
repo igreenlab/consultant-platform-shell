@@ -133,7 +133,7 @@ declare function isTokenExpired(token: string | null | undefined): boolean;
  *  - `voTriggerable`: rota específica ACIONÁVEL direto pelo menu do VO
  *     (deep-link no namespace, mesmo que "admin-ish" no módulo).
  */
-type ModuleId = 'rankings' | 'academy' | 'eventos' | 'creators';
+type ModuleId = 'rankings' | 'academy' | 'eventos' | 'creators' | 'store';
 /** Como o módulo obtém auth (auth-unificada.md). α ⇒ `vo-jwt` é o alvo. */
 type ModuleSession = 'vo-jwt' | 'firebase-bridge' | 'public';
 interface ModuleMenuItem {
