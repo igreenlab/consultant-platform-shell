@@ -92,11 +92,27 @@ versão anterior do código — foram escritos contra o defeito, não depois del
 Suíte completa: **25 testes**, `tsc --noEmit` limpo, `tsup` reconstruindo o
 `dist/` (committado de propósito — consumidores git-dep recebem build pronto).
 
-⚠️ **Limite conhecido**: o logout proativo (efeito + timer) **não** tem teste
-automatizado. Os testes do repo usam `renderToStaticMarkup`, que não roda
-`useEffect`, e não há runner com DOM/`act` aqui. Cobrir isso exigiria adicionar
-jsdom + testing-library ao pacote — decisão de escopo do time, não entrou nesta
-rodada.
+### Logout proativo — verificado fora da suíte
+
+O efeito de expiração depende de `useEffect` + `setTimeout`, e a suíte do repo
+usa `renderToStaticMarkup`, que não roda efeito nenhum. Para não entregar isso
+sem prova, foi verificado num harness com DOM real (jsdom + `react-dom/client`
++ `act`), montando o `SessionProvider` de verdade contra o `dist/` construído:
+
+| Cenário | Resultado |
+|---|---|
+| Token expirado no storage | desloga no mount, `onLogout` chamado, storage limpo |
+| Token válido (1h) | sessão de pé, nada acontece |
+| **Token que expira durante a sessão** | **o timer desloga sozinho ao chegar no `exp`** |
+| Token sem `exp` | não desloga (quem decide é o backend) |
+| `apiBase` `//evil`, `/\evil`, `https://evil` | montagem estoura nos três |
+| `apiBase` `/api` e absoluto do host | monta normal |
+
+⚠️ **Esse harness NÃO está no repositório**: ele depende de `jsdom`, que não é
+dependência deste pacote. Trazer `jsdom` + testing-library pro `devDependencies`
+e transformar esses 6 casos em teste versionado é decisão de escopo do time —
+enquanto não acontecer, o logout proativo segue coberto só por verificação
+manual, não por CI.
 
 ## Pendências antes de fechar
 
