@@ -527,10 +527,19 @@ function joinPath(namespace: string, to: string): string {
   return `${namespace}${to.startsWith('/') ? '' : '/'}${to}`;
 }
 
-/** Match tosco de rota relativa, tolerando segmentos `:param`. */
+/**
+ * Match tosco de rota relativa, tolerando segmentos `:param`.
+ *
+ * Casa por PREFIXO de segmentos, não por igualdade: uma rota admin cobre suas
+ * sub-rotas (`/admin-moderacao/caso/42` é tão admin quanto `/admin-moderacao`).
+ * Com igualdade exata, `isAdminRoute` respondia `false` pra qualquer deep-link
+ * abaixo da rota admin — quem usasse esse helper como guard deixaria passar.
+ */
 function matchRel(pattern: string, actual: string): boolean {
   const p = pattern.split('/').filter(Boolean);
   const a = actual.split('/').filter(Boolean);
-  if (p.length !== a.length) return false;
+  // Pattern `/` (raiz do módulo) casa só com a raiz — senão viraria curinga.
+  if (p.length === 0) return a.length === 0;
+  if (p.length > a.length) return false;
   return p.every((seg, i) => seg.startsWith(':') || seg === a[i]);
 }

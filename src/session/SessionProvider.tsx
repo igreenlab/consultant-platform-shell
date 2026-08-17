@@ -10,7 +10,7 @@ import {
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { voSession } from './session-storage';
-import { idconsultorFromToken } from './jwt';
+import { decodeVoJwt, idconsultorFromToken, isTokenExpired } from './jwt';
 import type { Consultant, SessionValue } from './types';
 
 /**
@@ -41,11 +41,41 @@ interface ApiEnvelope<T> {
 }
 
 /**
+ * `apiBase` só pode RESOLVER pra mesma origem do host. Um `apiBase` apontando
+ * pra fora vazaria o Bearer token do consultor na primeira chamada.
+ *
+ * Começar com `/` não prova nada: `//evil.com` e `/\evil.com` também começam
+ * com barra e resolvem pra outra origem (URL protocol-relative — o segundo
+ * porque o parser WHATWG trata `\` como `/` em esquemas especiais). Por isso a
+ * checagem resolve SEMPRE contra a origem da página, sem atalho por prefixo.
+ */
+function assertSameOriginApiBase(apiBase: string) {
+  if (!apiBase) return; // vazio: fetch relativo à própria página
+  const origin = typeof window === 'undefined' ? null : window.location?.origin;
+  if (!origin) return; // SSR/teste: sem origem pra comparar
+
+  let resolved: URL;
+  try {
+    resolved = new URL(apiBase, origin);
+  } catch {
+    return; // URL inválida: deixa o fetch falhar com o erro real
+  }
+
+  if (resolved.origin !== origin) {
+    throw new Error(
+      `SessionProvider: apiBase="${apiBase}" resolve pra outra origem (${resolved.origin}) — ` +
+        'o Bearer token do consultor não pode sair do host. Use um path relativo.',
+    );
+  }
+}
+
+/**
  * Fetcher default: `GET {apiBase}/v1/consultant` com Bearer, desembrulhando o
  * envelope da API do VO (`{ success, data }`). O host pode injetar seu próprio
  * `fetchConsultant` (ex.: o `api` client do VO) via prop.
  */
 function makeDefaultFetchConsultant(apiBase: string) {
+  assertSameOriginApiBase(apiBase);
   return async function defaultFetchConsultant(token: string): Promise<Consultant> {
     const res = await fetch(`${apiBase.replace(/\/$/, '')}/v1/consultant`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -103,7 +133,7 @@ export function SessionProvider({
   const { data: consultant, isLoading } = useQuery({
     queryKey: consultantQueryKey(token),
     queryFn: () => loadConsultant(token as string),
-    enabled: !!token,
+    enabled: !!token && !isTokenExpired(token),
   });
 
   const login = useCallback(
@@ -120,6 +150,30 @@ export function SessionProvider({
     queryClient.clear();
     onLogout?.();
   }, [queryClient, onLogout]);
+
+  // isTokenExpired() existia mas não era usado — sessão morta (token com
+  // `exp` no passado) ficava restaurada silenciosamente até a primeira
+  // chamada de API falhar. Desloga assim que o token (restaurado do storage ou
+  // trocado noutra aba) já está expirado, E agenda o logout pro instante do
+  // `exp`: só a checagem no mount deixaria uma aba aberta seguir com a sessão
+  // de pé depois de expirar, já que nada re-renderiza sozinho.
+  useEffect(() => {
+    if (!token) return;
+    if (isTokenExpired(token)) {
+      logout();
+      return;
+    }
+    const exp = decodeVoJwt(token)?.exp;
+    if (typeof exp !== 'number') return; // sem `exp` legível: quem decide é o backend
+
+    const ms = exp * 1000 - Date.now();
+    // setTimeout satura acima de 2^31-1 ms e dispararia NA HORA — token com
+    // validade tão longa fica sem timer (a checagem acima já cobre o mount).
+    if (ms <= 0 || ms > 2_147_483_647) return;
+
+    const timer = setTimeout(logout, ms);
+    return () => clearTimeout(timer);
+  }, [token, logout]);
 
   const value = useMemo<SessionValue>(
     () => ({

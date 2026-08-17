@@ -120,7 +120,24 @@ var SessionContext = createContext(null);
 function consultantQueryKey(token) {
   return ["consultant", token];
 }
+function assertSameOriginApiBase(apiBase) {
+  if (!apiBase) return;
+  const origin = typeof window === "undefined" ? null : window.location?.origin;
+  if (!origin) return;
+  let resolved;
+  try {
+    resolved = new URL(apiBase, origin);
+  } catch {
+    return;
+  }
+  if (resolved.origin !== origin) {
+    throw new Error(
+      `SessionProvider: apiBase="${apiBase}" resolve pra outra origem (${resolved.origin}) \u2014 o Bearer token do consultor n\xE3o pode sair do host. Use um path relativo.`
+    );
+  }
+}
 function makeDefaultFetchConsultant(apiBase) {
+  assertSameOriginApiBase(apiBase);
   return async function defaultFetchConsultant(token) {
     const res = await fetch(`${apiBase.replace(/\/$/, "")}/v1/consultant`, {
       headers: { Authorization: `Bearer ${token}` }
@@ -156,7 +173,7 @@ function SessionProvider({
   const { data: consultant, isLoading } = useQuery({
     queryKey: consultantQueryKey(token),
     queryFn: () => loadConsultant(token),
-    enabled: !!token
+    enabled: !!token && !isTokenExpired(token)
   });
   const login = useCallback(
     (newToken, opts) => {
@@ -171,6 +188,19 @@ function SessionProvider({
     queryClient.clear();
     onLogout?.();
   }, [queryClient, onLogout]);
+  useEffect(() => {
+    if (!token) return;
+    if (isTokenExpired(token)) {
+      logout();
+      return;
+    }
+    const exp = decodeVoJwt(token)?.exp;
+    if (typeof exp !== "number") return;
+    const ms = exp * 1e3 - Date.now();
+    if (ms <= 0 || ms > 2147483647) return;
+    const timer = setTimeout(logout, ms);
+    return () => clearTimeout(timer);
+  }, [token, logout]);
   const value = useMemo(
     () => ({
       token,
@@ -668,7 +698,8 @@ function joinPath(namespace, to) {
 function matchRel(pattern, actual) {
   const p = pattern.split("/").filter(Boolean);
   const a = actual.split("/").filter(Boolean);
-  if (p.length !== a.length) return false;
+  if (p.length === 0) return a.length === 0;
+  if (p.length > a.length) return false;
   return p.every((seg, i) => seg.startsWith(":") || seg === a[i]);
 }
 var DEFAULT_HOST_CONTEXT = { shell: "standalone" };
