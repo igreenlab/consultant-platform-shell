@@ -50,6 +50,16 @@ export const moduleRegistry: ModuleManifest[] = [
         voTriggerable: true,
       },
       {
+        // `Sparkles` já está no MODULE_ICONS do host (ui/src/layout/AppLayout.tsx);
+        // nome fora daquele mapa cai no fallback `Trophy`.
+        label: 'Ranking 3 Estrelas',
+        icon: 'Sparkles',
+        to: '/tres-estrelas',
+        group: 'Rankings',
+        surfaceInVOSidebar: true,
+        voTriggerable: true,
+      },
+      {
         label: 'Cruzeiro Gusttavo Lima',
         icon: 'Ship',
         to: '/cruzeiro-gusttavo-lima',
